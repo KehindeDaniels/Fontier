@@ -42,7 +42,7 @@
       <div
         class="flex gap-6 sm:order-none sm:flex-row order-2 justify-center sm:justify-end mt-4 sm:mt-0 sm:relative sm:top-auto sm:left-auto sm:right-8 absolute left-0 right-0 top-[370px]"
       >
-        <div class="flex items-center gap-2 z-20">
+        <div class="flex items-center gap-2">
           <button
             id="boldBtn"
             class="text-lg font-bold text-fontIconLight dark:text-fontIconDark h-10 w-10 grid place-content-center transition-all transform hover:scale-105"
@@ -78,13 +78,14 @@
           <!-- Divider line -->
           <button
             id="monoBtn"
-            class="relative text-lg font-mono text-fontIconLight dark:text-fontIconDark h-10 w-10 grid place-content-center opacity-50 transition-all transform hover:scale-105 hover:rounded"
+            class="relative text-lg font-mono text-fontIconLight dark:text-fontIconDark h-10 w-10 grid place-content-center transition-all transform hover:scale-105 hover:rounded"
             disabled
           >
-            {}
+            <span class="span opacity-50">{}</span>
+
             <span
               id="tooltip"
-              class="hidden absolute bottom-0 right-0 bg-black text-white text-xs rounded w-64 py-1 px-4 z-100"
+              class="hidden absolute bottom-96 right-0 bg-black opacity-45 text-white text-xs rounded w-64 py-1 px-4 z-100"
             >
               Not yet available... this is more than my power🙈
             </span>

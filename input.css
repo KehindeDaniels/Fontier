@@ -29,5 +29,5 @@
 }
 #monoBtn:hover #tooltip,
 #monoBtn:focus #tooltip {
-  display: block;
+  display: flex;
 }
