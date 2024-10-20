@@ -200,7 +200,7 @@ document.addEventListener("DOMContentLoaded", () => {
     "Ctrl + D (Windows) or ⌘ + D (Mac) duplicates the current line in many code editors and word processors.",
     "Ctrl + Backspace (Windows) or ⌘ + Backspace (Mac) deletes the previous entire word instead of just a single character.",
     "Alt + Tab (Windows) or ⌘ + Tab (Mac) lets you quickly switch between open applications.",
-    "Ctrl + A (Windows) or ⌘ + A (Mac) selects all text in a document or page in just one step.",
+    "You’re not copying Plain text, but Unicode characters!!!",
     "You can drag and drop text in many text editors to move it around easily.",
     "Windows Key + L (Windows) or Ctrl + ⌘ + Q (Mac) quickly locks your computer. Perfect for stepping away from your desk.",
     "Use Windows + Left/Right Arrow (Windows) or Control + ⌘ + F (Mac) to snap windows to the sides or full screen for multitasking.",
