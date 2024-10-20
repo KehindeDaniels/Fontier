@@ -148,7 +148,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
     } else {
       button.classList.remove(
-        "bg-bg-blue-500",
+        "bg-blue-500",
         "dark:bg-blue-500",
         "text-white",
         "rounded"
