@@ -1,0 +1,33 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.hidden {
+  display: none;
+}
+.show {
+  display: block;
+  animation: fadeInOut 3s forwards;
+}
+@keyframes fadeInOut {
+  0% {
+    opacity: 0;
+  }
+  10% {
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+#monoBtn[disabled] {
+  cursor: not-allowed;
+}
+#monoBtn:hover #tooltip,
+#monoBtn:focus #tooltip {
+  display: block;
+}

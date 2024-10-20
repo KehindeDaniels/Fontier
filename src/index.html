@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Itim&display=swap"
+    />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fontier</title>
+
+    <!-- Include Tailwind CSS -->
+    <link rel="stylesheet" href="./output.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <!-- Set index.js as a module -->
+    <script type="module" src="./index.js" defer></script>
+  </head>
+  <body class="bg-gray-100 dark:bg-backgroundDark min-h-screen">
+    <!-- Navigation Bar -->
+    <nav
+      class="w-full flex justify-between items-center p-4 bg-navBarLight dark:bg-navBarDark"
+    >
+      <!-- Left side: logo and theme toggle -->
+      <div
+        class="flex items-center w-full justify-between sm:justify-normal gap-6"
+      >
+        <h1
+          class="text-2xl font-semibold text-fontIconLight dark:text-fontIconDark font-itim"
+        >
+          fontier
+        </h1>
+        <button
+          id="themeToggle"
+          class="text-fontIconLight dark:text-fontIconDark transition-all transform hover:scale-105 focus:outline-none"
+        ></button>
+      </div>
+
+      <!-- Font icons (single set for both desktop and mobile) -->
+      <div
+        class="flex gap-6 sm:order-none sm:flex-row order-2 justify-center sm:justify-end mt-4 sm:mt-0 sm:relative sm:top-auto sm:left-auto sm:right-8 absolute left-0 right-0 top-[370px]"
+      >
+        <div class="flex items-center gap-2 z-20">
+          <button
+            id="boldBtn"
+            class="text-lg font-bold text-fontIconLight dark:text-fontIconDark h-10 w-10 grid place-content-center transition-all hover:bg-blue-500 hover:text-white hover:rounded"
+          >
+            B
+          </button>
+          <div class="h-4 w-[1px] bg-gray-300 dark:bg-gray-500"></div>
+          <!-- Divider line -->
+          <button
+            id="italicBtn"
+            class="text-lg italic text-fontIconLight dark:text-fontIconDark h-10 w-10 grid place-content-center transition-all hover:bg-blue-500 hover:text-white hover:rounded"
+          >
+            i
+          </button>
+          <div class="h-4 w-[1px] bg-gray-300 dark:bg-gray-500"></div>
+          <!-- Divider line -->
+          <button
+            id="underlineBtn"
+            class="text-lg underline text-fontIconLight dark:text-fontIconDark h-10 w-10 grid place-content-center transition-all hover:bg-blue-500 hover:text-white hover:rounded"
+          >
+            U
+          </button>
+          <div class="h-4 w-[1px] bg-gray-300 dark:bg-gray-500"></div>
+          <!-- Divider line -->
+          <button
+            id="strikeBtn"
+            class="text-lg line-through text-fontIconLight dark:text-fontIconDark h-10 w-10 grid place-content-center transition-all hover:bg-blue-500 hover:text-white hover:rounded"
+          >
+            S
+          </button>
+          <div class="h-4 w-[1px] bg-gray-300 dark:bg-gray-500"></div>
+          <!-- Divider line -->
+          <button
+            id="monoBtn"
+            class="text-lg font-mono text-fontIconLight dark:text-fontIconDark h-10 w-10 grid place-content-center opacity-50 transition-all hover:bg-blue-500 hover:text-white hover:rounded relative"
+            disabled
+          >
+            {}
+            <span
+              id="tooltip"
+              class="hidden absolute bottom-12 left-1/2 transform -translate-x-1/2 bg-black text-white text-xs rounded w-64 py-1 px-4 z-100"
+            >
+              Not yet available... more than my power🙈
+            </span>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Input & Output Area -->
+    <div
+      class="flex flex-col-reverse sm:flex-row justify-center mt-8 sm:space-x-8 space-y-4 sm:space-y-0 p-4"
+    >
+      <!-- Input Area (Desktop: left | Mobile: bottom) -->
+      <div
+        class="w-full sm:h-[350px] mt-16 rounded-full sm:mt-0 sm:w-1/2 p-4 bg-white dark:bg-textAreaDark sm:rounded-lg shadow"
+      >
+        <!-- Textarea for user input with auto resizing -->
+        <textarea
+          id="textInput"
+          class="w-full resize-none sm:w-full h-10 sm:h-full py-2 px-8 rounded focus:outline-none bg-textAreaLight dark:bg-textAreaDark text-fontIconLight dark:text-fontIconDark transition-all"
+          rows="3"
+          placeholder="Type your text here..."
+        ></textarea>
+      </div>
+
+      <!-- Output Area (Desktop: right | Mobile: top) -->
+      <div
+        class="w-full sm:w-1/2 relative p-4 bg-white dark:bg-textAreaDark rounded-lg shadow"
+      >
+        <!-- Copy button at the top-right of the output area -->
+        <button
+          id="copyBtn"
+          class="absolute top-4 right-4 px-2 py-1 text-xs bg-none dark:bg-gray-700 text-gray-500 dark:text-white rounded transition-all transform hover:scale-105"
+        >
+          <i class="fas fa-copy mr-1"></i>
+          copy style
+        </button>
+
+        <!-- Styled Text Output -->
+        <div
+          id="textOutput"
+          class="p-4 h-full min-h-[200px] text-fontIconLight dark:text-fontIconDark"
+        >
+          Your styled text will appear here...
+        </div>
+      </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div
+      id="toast"
+      class="hidden fixed bottom-4 right-4 bg-blue-500 text-xs text-white py-2 px-2 rounded-lg shadow-lg opacity-0 transition-opacity duration-500"
+    >
+      Text copied to clipboard!
+    </div>
+  </body>
+</html>
