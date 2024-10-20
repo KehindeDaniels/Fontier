@@ -1,3 +1,16 @@
+import {
+  boldMap,
+  italicMap,
+  boldItalicMap,
+  strikethroughMap,
+  boldStrikethroughMap,
+  italicStrikethroughMap,
+  boldItalicStrikethroughMap,
+  underlineMap,
+  monospaceMap,
+  monospaceBoldMap,
+} from "./fontStyles.js";
+
 document.addEventListener("DOMContentLoaded", () => {
   const textInput = document.getElementById("textInput");
   const textOutput = document.getElementById("textOutput");
@@ -128,14 +141,14 @@ document.addEventListener("DOMContentLoaded", () => {
     styles[styleKey] = !styles[styleKey];
     if (styles[styleKey]) {
       button.classList.add(
-        "bg-fontIconLight",
+        "bg-blue-500",
         "dark:bg-blue-500",
         "text-white",
         "rounded"
       );
     } else {
       button.classList.remove(
-        "bg-fontIconLight",
+        "bg-bg-blue-500",
         "dark:bg-blue-500",
         "text-white",
         "rounded"
