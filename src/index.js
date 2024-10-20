@@ -170,3 +170,69 @@ document.addEventListener("DOMContentLoaded", () => {
     showToast(); // Show toast notification when copied
   });
 });
+
+document.addEventListener("DOMContentLoaded", () => {
+  const tipBtn = document.getElementById("tipBtn");
+  const closeModal = document.getElementById("closeModal");
+  const tipModal = document.getElementById("tipModal");
+  const tipContent = document.getElementById("tipContent");
+  const prevTip = document.getElementById("prevTip");
+  const nextTip = document.getElementById("nextTip");
+
+  // Array of tips
+  const tips = [
+    "🪟 + V (Windows) or ⌘ + V (Mac) opens a clipboard manager to see recently copied items.",
+    "Ctrl + Shift + V (Windows) or ⌘ + Shift + V (Mac) pastes without formatting in many apps. Perfect for copying from the web into a document.",
+    "Double-click a word to select it. Triple-click to select the entire paragraph.",
+    "Ctrl + D (Windows) or ⌘ + D (Mac) duplicates the current line in many code editors and word processors.",
+    "Ctrl + Backspace (Windows) or ⌘ + Backspace (Mac) deletes the previous entire word instead of just a single character.",
+    "Alt + Tab (Windows) or ⌘ + Tab (Mac) lets you quickly switch between open applications.",
+    "Ctrl + A (Windows) or ⌘ + A (Mac) selects all text in a document or page in just one step.",
+    "You can drag and drop text in many text editors to move it around easily.",
+    "Windows Key + L (Windows) or Ctrl + ⌘ + Q (Mac) quickly locks your computer. Perfect for stepping away from your desk.",
+    "Use Windows + Left/Right Arrow (Windows) or Control + ⌘ + F (Mac) to snap windows to the sides or full screen for multitasking.",
+  ];
+
+  let currentTipIndex = 0;
+
+  // Function to update the modal content with the current tip
+  function updateTipContent() {
+    tipContent.textContent = tips[currentTipIndex];
+    prevTip.disabled = currentTipIndex === 0; // Disable "Prev" if at the first tip
+    nextTip.disabled = currentTipIndex === tips.length - 1; // Disable "Next" if at the last tip
+  }
+
+  // Show the modal when the tip icon is clicked
+  tipBtn.addEventListener("click", () => {
+    tipModal.classList.remove("hidden");
+    updateTipContent(); // Show the first tip
+  });
+
+  // Close the modal
+  closeModal.addEventListener("click", () => {
+    tipModal.classList.add("hidden");
+  });
+
+  // Hide the modal if clicked outside of the modal content
+  window.addEventListener("click", (event) => {
+    if (event.target === tipModal) {
+      tipModal.classList.add("hidden");
+    }
+  });
+
+  // Navigate to the previous tip
+  prevTip.addEventListener("click", () => {
+    if (currentTipIndex > 0) {
+      currentTipIndex--;
+      updateTipContent();
+    }
+  });
+
+  // Navigate to the next tip
+  nextTip.addEventListener("click", () => {
+    if (currentTipIndex < tips.length - 1) {
+      currentTipIndex++;
+      updateTipContent();
+    }
+  });
+});
