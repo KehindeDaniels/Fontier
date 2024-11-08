@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fontier Styler</title>
+    <link href="tailwind.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-100 p-4">
+    <div class="text-center mb-4">
+      <h1 class="text-lg font-bold">Fontier Styler</h1>
+    </div>
+    <textarea
+      id="textInput"
+      class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+      placeholder="Type here..."
+    ></textarea>
+    <div class="flex justify-around my-4">
+      <button
+        id="boldBtn"
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+      >
+        B
+      </button>
+      <button
+        id="italicBtn"
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+      >
+        I
+      </button>
+      <button
+        id="underlineBtn"
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+      >
+        U
+      </button>
+      <button
+        id="strikeBtn"
+        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
+      >
+        S
+      </button>
+    </div>
+    <div id="textOutput" class="p-2 border rounded bg-white">
+      Styled text will appear here...
+    </div>
+    <button
+      id="copyBtn"
+      class="mt-4 w-full bg-green-500 text-white py-2 rounded hover:bg-green-700"
+    >
+      Copy to Clipboard
+    </button>
+  </body>
+</html>

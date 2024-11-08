@@ -21,14 +21,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const underlineBtn = document.getElementById("underlineBtn");
   const copyBtn = document.getElementById("copyBtn");
   const themeToggleBtn = document.getElementById("themeToggle");
-  const toast = document.getElementById("toast"); // Toast element
-
+  const toast = document.getElementById("toast");
   // Function to show toast notification
   const showToast = () => {
     toast.classList.remove("hidden");
     toast.classList.add("show");
 
-    // Remove the toast after 3 seconds
     setTimeout(() => {
       toast.classList.remove("show");
       toast.classList.add("hidden");
