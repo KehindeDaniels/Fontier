@@ -1,54 +1,116 @@
 <!DOCTYPE html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Fontier Styler</title>
-    <link href="tailwind.css" rel="stylesheet" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Itim&display=swap"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
+    <link rel="stylesheet" href="./output.css" />
+    <script type="module" src="popup.js" defer></script>
+    <title>Fontier</title>
   </head>
-  <body class="bg-gray-100 p-4">
-    <div class="text-center mb-4">
-      <h1 class="text-lg font-bold">Fontier Styler</h1>
+  <body
+    class="p-4 bg-gray-50 dark:bg-backgroundDark min-h-screen"
+    style="width: 400px"
+  >
+    <!-- Header Section -->
+    <div class="flex justify-between items-center mb-4 px-2">
+      <h1
+        class="text-2xl font-semibold text-fontIconLight dark:text-fontIconDark font-itim"
+      >
+        Fontier
+      </h1>
+      <button
+        id="themeToggle"
+        class="text-xl text-fontIconLight dark:text-fontIconDark"
+      ></button>
     </div>
-    <textarea
-      id="textInput"
-      class="w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-      placeholder="Type here..."
-    ></textarea>
-    <div class="flex justify-around my-4">
-      <button
-        id="boldBtn"
-        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-      >
-        B
-      </button>
-      <button
-        id="italicBtn"
-        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-      >
-        I
-      </button>
-      <button
-        id="underlineBtn"
-        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-      >
-        U
-      </button>
-      <button
-        id="strikeBtn"
-        class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700"
-      >
-        S
-      </button>
+
+    <div class="">
+      <!-- Styled Text Output -->
+      <div class="">
+        <div
+          id="textOutput"
+          class="w-full h-full p-3 rounded overflow-auto dark:bg-gray-800 text-fontIconLight dark:text-fontIconDark min-h-[60px] border border-gray-200 dark:border-gray-700"
+          style="height: 100%; padding: 0.5rem; overflow: auto"
+        >
+          Styled text appears here...
+        </div>
+      </div>
+
+      <!-- btn-output -->
+
+      <div class="btn-output">
+        <!-- Styling Buttons -->
+        <div class="flex justify-around items-center mb-4 gap-2">
+          <button
+            id="boldBtn"
+            class="text-lg font-bold text-fontIconLight dark:text-fontIconDark h-10 w-10 grid place-content-center transition-all transform hover:scale-105"
+          >
+            B
+          </button>
+
+          <div class="h-4 w-[1px] bg-gray-300 dark:bg-gray-500"></div>
+          <!-- Divider line -->
+          <button
+            id="italicBtn"
+            class="text-lg font-bold text-fontIconLight dark:text-fontIconDark h-10 w-10 grid place-content-center transition-all transform hover:scale-105"
+          >
+            i
+          </button>
+          <div class="h-4 w-[1px] bg-gray-300 dark:bg-gray-500"></div>
+          <!-- Divider line -->
+          <button
+            id="underlineBtn"
+            class="text-lg font-bold text-fontIconLight dark:text-fontIconDark h-10 w-10 grid place-content-center transition-all transform hover:scale-105"
+          >
+            U
+          </button>
+          <div class="h-4 w-[1px] bg-gray-300 dark:bg-gray-500"></div>
+          <!-- Divider line -->
+          <button
+            id="strikeBtn"
+            class="text-lg line-through text-fontIconLight dark:text-fontIconDark h-10 w-10 grid place-content-center transition-all transform hover:scale-105 hover:rounded"
+          >
+            S
+          </button>
+          <!-- <div class="h-4 w-[1px] bg-gray-300 dark:bg-gray-500"></div> -->
+          <!-- Divider line -->
+        </div>
+
+        <!-- Text Input Area -->
+        <div class="mb-4">
+          <textarea
+            id="textInput"
+            class="w-full resize-none p-3 rounded dark:bg-textAreaDark text-fontIconLight dark:text-fontIconDark placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            rows="4"
+            placeholder="Type here..."
+            style="
+              height: 100%;
+              padding: 0.5rem;
+              border: 1px solid #f2f2f2;
+              border-radius: 4px;
+            "
+          ></textarea>
+        </div>
+      </div>
+
+      <!-- Copy Button -->
+      <div class="flex">
+        <button
+          id="copyBtn"
+          class="text-xs mt-2 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded"
+          style="width: 50%"
+        >
+          <i class="fas fa-copy mr-1"></i>
+          <!-- <i class="fas fa-check"></i> -->
+          Copy
+        </button>
+      </div>
     </div>
-    <div id="textOutput" class="p-2 border rounded bg-white">
-      Styled text will appear here...
-    </div>
-    <button
-      id="copyBtn"
-      class="mt-4 w-full bg-green-500 text-white py-2 rounded hover:bg-green-700"
-    >
-      Copy to Clipboard
-    </button>
   </body>
 </html>
