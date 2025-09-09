@@ -1,4 +1,4 @@
-import { Toaster } from "@/components/ui/sonner"; // ✅ modern
+import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router"; // if you're on react-router-dom, import from "react-router-dom"
