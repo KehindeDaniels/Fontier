@@ -1,3 +1,4 @@
+import { cn } from "@/lib/utils";
 import type { TextFormat } from "../core/types";
 
 interface TextEditorProps {
@@ -8,22 +9,22 @@ interface TextEditorProps {
 }
 
 const TextEditor = ({ text, setText, format, isDark }: TextEditorProps) => {
-  const base = `
-    w-full sm:h-[350px] mt-32  sm:mt-0 sm:w-1/2 p-4 shadow
-    ${isDark ? "bg-[#2E323E] rounded-lg" : "bg-white rounded-xl"}
-  `;
+  const base = cn(
+    "w-full sm:h-[350px] mt-32 sm:mt-0 sm:w-1/2 p-4 shadow",
+    "rounded-xl sm:rounded-lg",
+    isDark ? "bg-[#2E323E]" : "bg-white"
+  );
 
-  const textarea = `
-    w-full resize-none sm:w-full h-10 sm:h-full py-2 px-8 rounded focus:outline-none transition-all
-    ${isDark ? "bg-[#2E323E] text-[#D0D0D0]" : "bg-white text-[#606060]"}
-  `;
+  const textarea = cn(
+    "w-full resize-none sm:w-full h-10 sm:h-full py-2 px-8 rounded focus:outline-none transition-all",
+    isDark ? "bg-[#2E323E] text-[#D0D0D0]" : "bg-white text-[#606060]"
+  );
 
-  // Preview classes applied to text itself
-  const visual = [
-    format.bold ? "font-bold" : "",
-    format.italic ? "italic" : "",
-    format.underline ? "underline" : "",
-    format.strikethrough ? "line-through" : "",
+  const visual = cn(
+    format.bold && "font-bold",
+    format.italic && "italic",
+    format.underline && "underline",
+    format.strikethrough && "line-through",
     format.font === "serif"
       ? "font-serif"
       : format.font === "monospace"
@@ -37,8 +38,8 @@ const TextEditor = ({ text, setText, format, isDark }: TextEditorProps) => {
       ? "text-xl"
       : format.size === "h4"
       ? "text-lg"
-      : "text-base",
-  ].join(" ");
+      : "text-base"
+  );
 
   return (
     <div className={base}>
@@ -46,7 +47,7 @@ const TextEditor = ({ text, setText, format, isDark }: TextEditorProps) => {
         value={text}
         onChange={(e) => setText(e.target.value)}
         placeholder="Type your text here..."
-        className={`${textarea} ${visual}`}
+        className={cn(textarea, visual)}
       />
     </div>
   );

@@ -1,13 +1,12 @@
 import { useState, useEffect } from "react";
-import { Moon, Sun, Copy } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
+import { Moon, Sun } from "lucide-react";
 import FormattingToolbar from "./FormattingToolbar";
 import TextEditor from "./TextEditor";
 import PreviewPane from "./PreviewPane";
 import { convertToUnicode } from "@/utils/unicodeConverter";
-
+import { cn } from "@/lib/utils";
 import type { TextFormat } from "../core/types";
+import { Toaster } from "sonner"; // ⬅️ add this
 
 const Fontier = () => {
   const [isDark, setIsDark] = useState(true);
@@ -26,38 +25,27 @@ const Fontier = () => {
     setConvertedText(convertToUnicode(text, format));
   }, [text, format]);
 
-  const handleCopyToClipboard = async () => {
-    try {
-      await navigator.clipboard.writeText(convertedText);
-      toast({
-        title: "Copied!",
-        description: "Styled text copied to clipboard",
-      });
-    } catch (error) {
-      toast({
-        title: error instanceof Error ? error.message : "Copy failed",
-        description: "Unable to copy to clipboard",
-        variant: "destructive",
-      });
-    }
-  };
-
   const toggleTheme = () => setIsDark((v) => !v);
 
   return (
     <div
-      className={`min-h-screen ${
+      className={cn(
+        "min-h-screen",
         isDark ? "bg-[#2C2E3A] text-white" : "bg-gray-100 text-gray-900"
-      }`}
+      )}
     >
+      {/* sonner host */}
+      <Toaster richColors position="top-right" />
+
       {/* Header */}
       <header
-        className={`${
+        className={cn(
+          "border-b",
           isDark ? "bg-[#2E323E] border-[#2E323E]" : "bg-white border-gray-200"
-        } border-b`}
+        )}
       >
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          {/* Left: logo + theme toggle (like v1) */}
+          {/* Left: logo + theme toggle */}
           <div className="flex items-center w-full justify-between sm:justify-normal gap-6">
             <h1 className="text-2xl font-semibold font-[Itim,cursive] text-[#606060] dark:text-[#D0D0D0]">
               fontier
@@ -77,52 +65,52 @@ const Fontier = () => {
             </button>
           </div>
 
-          {/* Right side (desktop): copy button like v1 lived near preview; we keep it here as a convenience */}
-          <div className="hidden sm:flex items-center space-x-3">
-            <Button
-              onClick={handleCopyToClipboard}
-              className="bg-blue-600 hover:bg-blue-700 text-white"
-              size="sm"
-            >
-              <Copy className="w-4 h-4 mr-2" />
-              copy style
-            </Button>
-          </div>
+          {/* Right side: (removed copy button) */}
+          <div className="hidden sm:flex items-center space-x-3" />
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 relative">
-        {/* Toolbar sits in header area on mobile (absolute), static on desktop */}
-        <FormattingToolbar
-          format={format}
-          setFormat={setFormat}
-          isDark={isDark}
-        />
+      <div className="container mx-auto px-4 py-6">
+        <div className="relative">
+          {/* Toolbar: absolute on mobile, static on desktop */}
+          <div
+            className={cn(
+              "absolute left-0 right-0 z-20 px-3 w-full",
+              "top-80", // 🔧 MOBILE offset: tweak up/down to sit above editor
+              "sm:static sm:mt-2 sm:px-0" // desktop: normal flow above row
+            )}
+          >
+            <FormattingToolbar
+              format={format}
+              setFormat={setFormat}
+              isDark={isDark}
+            />
+          </div>
 
-        {/* Two panes — v1 layout: chat-like stack on mobile */}
-        <div className=" flex flex-col-reverse sm:flex-row justify-center mt-8 sm:mt-12 sm:space-x-8 space-y-4 sm:space-y-0">
-          <TextEditor
-            text={text}
-            setText={setText}
-            format={format}
-            isDark={isDark}
-          />
+          {/* pad content so absolute toolbar doesn't overlap on mobile */}
+          <div className="pt-[5.5rem] sm:pt-0">
+            <div className="flex flex-col-reverse sm:flex-row justify-center mt-4 sm:mt-8 sm:space-x-8 space-y-4 sm:space-y-0">
+              <TextEditor
+                text={text}
+                setText={setText}
+                format={format}
+                isDark={isDark}
+              />
 
-          <PreviewPane
-            convertedText={convertedText}
-            isDark={isDark}
-            onCopy={handleCopyToClipboard} // show copy button inside preview like v1
-          />
+              <PreviewPane convertedText={convertedText} isDark={isDark} />
+            </div>
+          </div>
         </div>
 
         {/* Info section */}
         <div
-          className={`mt-8 p-4 rounded-lg border ${
+          className={cn(
+            "mt-8 p-4 rounded-lg border",
             isDark
               ? "bg-[#2E323E] border-[#2E323E]"
               : "bg-gray-100 border-gray-200"
-          }`}
+          )}
         >
           <h3 className="font-semibold mb-2">How it works:</h3>
           <p className="text-sm opacity-75">

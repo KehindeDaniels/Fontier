@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import type { TextFormat } from "../core/types";
 
 interface FormattingToolbarProps {
@@ -24,33 +25,27 @@ const FormattingToolbar = ({
 
   return (
     <div
-      className={`
-
-        absolute top-80 left-0 right-0 z-20 px-3
-        w-full
-      
-        sm:top-2   /* 💡 tweak this value for desktop */
-      `}
+      className={cn(
+        "absolute top-80 left-0 right-0 z-20 px-3 w-full",
+        "sm:static sm:mt-2 sm:px-0"
+      )}
     >
       <div
-        className={`
-          mx-auto w-full max-w-[95%]
-          rounded-lg border shadow
-          ${
-            isDark
-              ? "bg-[#2E323E]/90 border-gray-700"
-              : "bg-white/95 border-gray-200"
-          }
-          backdrop-blur px-2 py-1
-        `}
+        className={cn(
+          "mx-auto w-full max-w-[95%] rounded-lg border shadow backdrop-blur px-2 py-1",
+          isDark
+            ? "bg-[#2E323E]/90 border-gray-700"
+            : "bg-white/95 border-gray-200"
+        )}
       >
         <div className="w-full flex items-center gap-1 flex-wrap justify-center sm:justify-start">
           {/* Bold */}
           <Button
             onClick={() => toggleFormat("bold")}
-            className={`h-8 w-8 sm:h-9 sm:w-9 grid place-content-center rounded transition-transform hover:scale-105 focus:outline-none focus:ring-0 ${
-              format.bold ? "bg-blue-600 text-white hover:scale-[1.03]" : ""
-            }`}
+            className={cn(
+              "h-8 w-8 sm:h-9 sm:w-9 grid place-content-center rounded transition-transform hover:scale-105 focus:outline-none focus:ring-0",
+              format.bold && "bg-blue-600 text-white hover:scale-[1.03]"
+            )}
             size="sm"
             variant="ghost"
           >
@@ -62,9 +57,10 @@ const FormattingToolbar = ({
           {/* Italic */}
           <Button
             onClick={() => toggleFormat("italic")}
-            className={`h-8 w-8 sm:h-9 sm:w-9 grid place-content-center rounded transition-transform hover:scale-105 focus:outline-none focus:ring-0 ${
-              format.italic ? "bg-blue-600 text-white hover:scale-[1.03]" : ""
-            }`}
+            className={cn(
+              "h-8 w-8 sm:h-9 sm:w-9 grid place-content-center rounded transition-transform hover:scale-105 focus:outline-none focus:ring-0",
+              format.italic && "bg-blue-600 text-white hover:scale-[1.03]"
+            )}
             size="sm"
             variant="ghost"
           >
@@ -76,11 +72,10 @@ const FormattingToolbar = ({
           {/* Underline */}
           <Button
             onClick={() => toggleFormat("underline")}
-            className={`h-8 w-8 sm:h-9 sm:w-9 grid place-content-center rounded transition-transform hover:scale-105 focus:outline-none focus:ring-0 ${
-              format.underline
-                ? "bg-blue-600 text-white hover:scale-[1.03]"
-                : ""
-            }`}
+            className={cn(
+              "h-8 w-8 sm:h-9 sm:w-9 grid place-content-center rounded transition-transform hover:scale-105 focus:outline-none focus:ring-0",
+              format.underline && "bg-blue-600 text-white hover:scale-[1.03]"
+            )}
             size="sm"
             variant="ghost"
           >
@@ -92,11 +87,11 @@ const FormattingToolbar = ({
           {/* Strikethrough */}
           <Button
             onClick={() => toggleFormat("strikethrough")}
-            className={`h-8 w-8 sm:h-9 sm:w-9 grid place-content-center rounded transition-transform hover:scale-105 focus:outline-none focus:ring-0 ${
-              format.strikethrough
-                ? "bg-blue-600 text-white hover:scale-[1.03]"
-                : ""
-            }`}
+            className={cn(
+              "h-8 w-8 sm:h-9 sm:w-9 grid place-content-center rounded transition-transform hover:scale-105 focus:outline-none focus:ring-0",
+              format.strikethrough &&
+                "bg-blue-600 text-white hover:scale-[1.03]"
+            )}
             size="sm"
             variant="ghost"
           >
@@ -110,15 +105,12 @@ const FormattingToolbar = ({
           <select
             value={format.size}
             onChange={(e) => toggleFormat("size", e.target.value)}
-            className={`
-              px-2 py-1 text-xs sm:text-sm rounded border
-              ${
-                isDark
-                  ? "bg-[#2E323E] border-gray-600 text-white"
-                  : "bg-white border-gray-300 text-gray-900"
-              }
-              focus:outline-none shrink-0 w-24 sm:w-28
-            `}
+            className={cn(
+              "px-2 py-1 text-xs sm:text-sm rounded border focus:outline-none shrink-0 w-24 sm:w-28",
+              isDark
+                ? "bg-[#2E323E] border-gray-600 text-white"
+                : "bg-white border-gray-300 text-gray-900"
+            )}
           >
             <option value="normal">Normal</option>
             <option value="h1">H1 Large</option>
@@ -131,15 +123,12 @@ const FormattingToolbar = ({
           <select
             value={format.font}
             onChange={(e) => toggleFormat("font", e.target.value)}
-            className={`
-              px-2 py-1 text-xs sm:text-sm rounded border ml-1
-              ${
-                isDark
-                  ? "bg-[#2E323E] border-gray-600 text-white"
-                  : "bg-white border-gray-300 text-gray-900"
-              }
-              focus:outline-none shrink-0 w-20 sm:w-28
-            `}
+            className={cn(
+              "px-2 py-1 text-xs sm:text-sm rounded border ml-1 focus:outline-none shrink-0 w-20 sm:w-28",
+              isDark
+                ? "bg-[#2E323E] border-gray-600 text-white"
+                : "bg-white border-gray-300 text-gray-900"
+            )}
           >
             <option value="normal">Sans</option>
             <option value="serif">Serif</option>
