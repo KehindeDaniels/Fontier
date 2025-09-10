@@ -8,17 +8,13 @@ interface TextEditorProps {
 }
 
 const TextEditor = ({ text, setText, format, isDark }: TextEditorProps) => {
-  const base = `
-    w-full sm:h-[350px] mt-32  sm:mt-0 sm:w-1/2 p-4 shadow
-    ${isDark ? "bg-[#2E323E] rounded-lg" : "bg-white rounded-xl"}
-  `;
+  const base =
+    "w-full sm:h-[350px] mt-16 sm:mt-0 sm:w-1/2 p-4 bg-white dark:bg-[#2E323E] sm:rounded-lg rounded-full shadow";
+  const textarea =
+    "w-full resize-none sm:w-full h-10 sm:h-full py-2 px-8 rounded focus:outline-none bg-[#FFFFFF] dark:bg-[#2E323E] " +
+    "text-[#606060] dark:text-[#D0D0D0] transition-all";
 
-  const textarea = `
-    w-full resize-none sm:w-full h-10 sm:h-full py-2 px-8 rounded focus:outline-none transition-all
-    ${isDark ? "bg-[#2E323E] text-[#D0D0D0]" : "bg-white text-[#606060]"}
-  `;
-
-  // Preview classes applied to text itself
+  // purely visual preview classes (like v1) applied to textarea text
   const visual = [
     format.bold ? "font-bold" : "",
     format.italic ? "italic" : "",

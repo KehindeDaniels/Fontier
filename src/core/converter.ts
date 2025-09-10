@@ -16,26 +16,21 @@ import {
 } from "./maps";
 
 const NBSP = "\u00A0";
-// const NNBSP = "\u202F";
 const LOW_UNDERLINE = "\u0332";
 
-// Underline whole phrase by converting spaces to NBSP and underlining every char
-const applyPhraseUnderline = (
-  text: string,
-  options: UnicodeTransformOptions = {}
-): string => {
-  const { skipSpacesForCombining = true } = options;
-
+/** Underline across spaces: convert " " -> NBSP and underline NBSPs too. */
+const applyPhraseUnderline = (text: string): string => {
   return Array.from(text)
-    .map((char) => {
-      if (char === " ") {
-        // replace space with NBSP and underline it too
+    .map((ch) => {
+      if (ch === " " || ch === NBSP) {
+        // keep the rule visually continuous through the gap
         return NBSP + LOW_UNDERLINE;
       }
-      if (skipSpacesForCombining && /\s/.test(char)) {
-        return char;
+      if (ch === "\n" || ch === "\r" || ch === "\t") {
+        // don't underline hard whitespace / line breaks
+        return ch;
       }
-      return char + LOW_UNDERLINE;
+      return ch + LOW_UNDERLINE;
     })
     .join("");
 };
@@ -63,15 +58,12 @@ const applySpecialFormat = (
     .join("");
 };
 
-/**
- * Choose ONE base variant map given the requested format.
- * This prevents double-mapping corruption (e.g., applying bold then italic sequentially).
- */
+/** Choose ONE base variant map */
 const chooseVariant = (f: TextFormat): Record<string, string> | null => {
   // Exclusive fonts first
   if (f.font === "monospace") return MONOSPACE;
   if (f.font === "script") return SCRIPT;
-  if (f.font === "serif") return SERIF; // keep if you intend “serif” to look bold-ish
+  if (f.font === "serif") return SERIF;
 
   // Headings (distinct looks)
   if (f.size === "h1") return SANS_BOLD; // loud
@@ -97,13 +89,13 @@ export const convertToUnicode = (
 ): string => {
   let out = text;
 
-  // 1) Base variant (one map only)
+  // 1) Base variant
   const base = chooseVariant(format);
   if (base) out = applyUnicodeTransformation(out, base);
 
-  // 2) Underline (phrase mode first!)
-  if (format.underlinePhrase) {
-    out = applyPhraseUnderline(out); // no skipSpaces here
+  // 2) Underline (phrase mode first)
+  if ("underlinePhrase" in format && format.underlinePhrase) {
+    out = applyPhraseUnderline(out);
   } else if (format.underline) {
     out = applySpecialFormat(out, UNDERLINE, {
       ...options,
@@ -111,18 +103,19 @@ export const convertToUnicode = (
     });
   }
 
-  // 3) Strikethrough (if phrase underline is on, also strike NBSPs)
+  // 3) Strikethrough
   if (format.strikethrough) {
-    const strikeOpts = format.underlinePhrase
-      ? { ...options, skipSpacesForCombining: false }
-      : options;
+    const strikeOpts =
+      "underlinePhrase" in format && format.underlinePhrase
+        ? { ...options, skipSpacesForCombining: false } // also strike NBSPs
+        : options;
     out = applySpecialFormat(out, STRIKETHROUGH, strikeOpts);
   }
 
   return out;
 };
 
-/** Quick helper when you want to force a specific map (e.g., from a tray action) */
+/** Force-map with a specific variant (e.g., from a tray action) */
 export const mapStringWithVariant = (
   text: string,
   variantMap: Record<string, string>,
@@ -139,7 +132,7 @@ export const mapStringWithVariant = (
   return result;
 };
 
-/** Normalize styled text back to ASCII: strip combining marks and reverse-map known glyphs */
+/** Normalize styled text back to ASCII */
 export const normalizeStyledText = (text: string): string => {
   const reverse = new Map<string, string>();
   const add = (m: Record<string, string>) => {
@@ -156,8 +149,9 @@ export const normalizeStyledText = (text: string): string => {
   add(SANS);
   add(SANS_BOLD);
   add(FULLWIDTH);
+  add(DOUBLESTRUCK);
 
-  // Remove combining underline/strikethrough marks, then reverse-map glyphs
+  // Strip combining marks then reverse-map
   return Array.from(text.replace(/[\u0332\u0336]/g, ""))
     .map((ch) => reverse.get(ch) ?? ch)
     .join("");

@@ -1,29 +1,46 @@
+import { Copy } from "lucide-react";
+
 interface PreviewPaneProps {
   convertedText: string;
   isDark: boolean;
+  onCopy?: () => void;
 }
 
-const PreviewPane = ({ convertedText, isDark }: PreviewPaneProps) => {
+const PreviewPane = ({ convertedText, isDark, onCopy }: PreviewPaneProps) => {
+  const wrapper = `
+    w-full sm:w-1/2 relative p-4 shadow
+    rounded-2xl sm:rounded-lg
+    ${isDark ? "bg-[#2E323E]" : "bg-white"}
+  `;
+
+  const outputBox = `
+    p-4 h-full min-h-[200px]
+    rounded-2xl sm:rounded-lg
+    ${isDark ? "text-[#D0D0D0] bg-[#2C2E3A]" : "text-[#606060] bg-gray-50"}
+  `;
+
   return (
-    <div
-      className={`p-4 rounded-lg border ${
-        isDark ? "bg-gray-800 border-gray-700" : "bg-white border-gray-200"
-      }`}
-    >
-      <h3 className="font-semibold mb-3">Unicode Preview</h3>
-      <div
-        className={`p-4 rounded border min-h-64 ${
-          isDark ? "bg-gray-900 border-gray-600" : "bg-gray-50 border-gray-200"
-        }`}
+    <div className={wrapper}>
+      {/* Copy button at top-right */}
+      <button
+        onClick={onCopy}
+        className={`
+          absolute top-4 right-4 px-2 py-1 text-xs rounded transition-transform hover:scale-105
+          ${isDark ? "bg-gray-700 text-white" : "bg-gray-100 text-gray-500"}
+        `}
+        title="Copy style"
       >
-        <div className="whitespace-pre-wrap break-words font-mono text-sm leading-relaxed">
+        <span className="inline-flex items-center gap-1">
+          <Copy className="w-3.5 h-3.5" />
+          copy style
+        </span>
+      </button>
+
+      <div className={outputBox}>
+        <div className="whitespace-pre-wrap break-words">
           {convertedText || "Your styled text will appear here..."}
         </div>
       </div>
-      <p className="text-xs mt-2 opacity-60">
-        This is how your text will look when pasted anywhere. Copy and paste
-        into Twitter, LinkedIn, etc.
-      </p>
     </div>
   );
 };

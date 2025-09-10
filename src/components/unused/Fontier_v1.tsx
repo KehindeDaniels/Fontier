@@ -2,16 +2,16 @@ import { useState, useEffect } from "react";
 import { Moon, Sun, Copy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import FormattingToolbar from "./FormattingToolbar";
-import TextEditor from "./TextEditor";
-import PreviewPane from "./PreviewPane";
+import FormattingToolbar from "../FormattingToolbar";
+import TextEditor from "../TextEditor";
+import PreviewPane from "../PreviewPane";
 import { convertToUnicode } from "@/utils/unicodeConverter";
 
-import type { TextFormat } from "../core/types";
+import type { TextFormat } from "../../core/types";
 
 const Fontier = () => {
   const [isDark, setIsDark] = useState(true);
-  const [text, setText] = useState("");
+  const [text, setText] = useState("This is an example");
   const [format, setFormat] = useState<TextFormat>({
     bold: false,
     italic: false,
@@ -23,7 +23,8 @@ const Fontier = () => {
   const [convertedText, setConvertedText] = useState("");
 
   useEffect(() => {
-    setConvertedText(convertToUnicode(text, format));
+    const converted = convertToUnicode(text, format);
+    setConvertedText(converted);
   }, [text, format]);
 
   const handleCopyToClipboard = async () => {
@@ -35,6 +36,7 @@ const Fontier = () => {
       });
     } catch (error) {
       toast({
+        // title: "Copy failed",
         title: error instanceof Error ? error.message : "Copy failed",
         description: "Unable to copy to clipboard",
         variant: "destructive",
@@ -42,43 +44,28 @@ const Fontier = () => {
     }
   };
 
-  const toggleTheme = () => setIsDark((v) => !v);
+  const toggleTheme = () => {
+    setIsDark(!isDark);
+  };
 
   return (
     <div
-      className={`min-h-screen ${
-        isDark ? "bg-[#2C2E3A] text-white" : "bg-gray-100 text-gray-900"
+      className={`min-h-screen transition-colors duration-300 ${
+        isDark ? "bg-gray-900 text-white" : "bg-gray-50 text-gray-900"
       }`}
     >
       {/* Header */}
       <header
-        className={`${
-          isDark ? "bg-[#2E323E] border-[#2E323E]" : "bg-white border-gray-200"
-        } border-b`}
+        className={`border-b transition-colors duration-300 ${
+          isDark ? "border-gray-700 bg-gray-800" : "border-gray-200 bg-white"
+        }`}
       >
         <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          {/* Left: logo + theme toggle (like v1) */}
-          <div className="flex items-center w-full justify-between sm:justify-normal gap-6">
-            <h1 className="text-2xl font-semibold font-[Itim,cursive] text-[#606060] dark:text-[#D0D0D0]">
-              fontier
-            </h1>
-
-            <button
-              onClick={toggleTheme}
-              className="text-[#606060] dark:text-[#D0D0D0] transition-transform hover:scale-105 focus:outline-none"
-              aria-label="Toggle theme"
-              title="Toggle theme"
-            >
-              {isDark ? (
-                <Moon className="w-5 h-5" />
-              ) : (
-                <Sun className="w-5 h-5" />
-              )}
-            </button>
+          <div className="flex items-center space-x-4">
+            <h1 className="text-2xl font-bold">fontier</h1>
           </div>
 
-          {/* Right side (desktop): copy button like v1 lived near preview; we keep it here as a convenience */}
-          <div className="hidden sm:flex items-center space-x-3">
+          <div className="flex items-center space-x-3">
             <Button
               onClick={handleCopyToClipboard}
               className="bg-blue-600 hover:bg-blue-700 text-white"
@@ -87,21 +74,35 @@ const Fontier = () => {
               <Copy className="w-4 h-4 mr-2" />
               copy style
             </Button>
+
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleTheme}
+              className={isDark ? "hover:bg-gray-700" : "hover:bg-gray-100"}
+            >
+              {isDark ? (
+                <Sun className="w-5 h-5" />
+              ) : (
+                <Moon className="w-5 h-5" />
+              )}
+            </Button>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
-      <div className="container mx-auto px-4 py-6 relative">
-        {/* Toolbar sits in header area on mobile (absolute), static on desktop */}
+      <div className="container mx-auto px-4 py-6">
+        {/* Formatting Toolbar */}
         <FormattingToolbar
           format={format}
           setFormat={setFormat}
           isDark={isDark}
         />
 
-        {/* Two panes — v1 layout: chat-like stack on mobile */}
-        <div className=" flex flex-col-reverse sm:flex-row justify-center mt-8 sm:mt-12 sm:space-x-8 space-y-4 sm:space-y-0">
+        {/* Two-pane editor */}
+        <div className="grid lg:grid-cols-2 gap-6 mt-6">
+          {/* Left Pane - Input */}
           <TextEditor
             text={text}
             setText={setText}
@@ -109,27 +110,23 @@ const Fontier = () => {
             isDark={isDark}
           />
 
-          <PreviewPane
-            convertedText={convertedText}
-            isDark={isDark}
-            onCopy={handleCopyToClipboard} // show copy button inside preview like v1
-          />
+          {/* Right Pane - Preview */}
+          <PreviewPane convertedText={convertedText} isDark={isDark} />
         </div>
 
         {/* Info section */}
         <div
-          className={`mt-8 p-4 rounded-lg border ${
+          className={`mt-8 p-4 rounded-lg ${
             isDark
-              ? "bg-[#2E323E] border-[#2E323E]"
+              ? "bg-gray-800 border-gray-700"
               : "bg-gray-100 border-gray-200"
-          }`}
+          } border`}
         >
           <h3 className="font-semibold mb-2">How it works:</h3>
           <p className="text-sm opacity-75">
             Your formatted text is converted to Unicode characters that preserve
             styling even when pasted into platforms like Twitter, LinkedIn,
-            Instagram, Discord, and WhatsApp that don&apos;t support HTML
-            formatting.
+            Instagram, Discord, and WhatsApp that don't support HTML formatting.
           </p>
         </div>
       </div>
