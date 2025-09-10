@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react";
-import { Moon, Sun } from "lucide-react";
 import FormattingToolbar from "./FormattingToolbar";
 import TextEditor from "./TextEditor";
 import PreviewPane from "./PreviewPane";
+import InfoSection from "./InfoSection";
 import { convertToUnicode } from "@/utils/unicodeConverter";
 import { cn } from "@/lib/utils";
 import type { TextFormat } from "../core/types";
-import { Toaster } from "sonner"; // ⬅️ add this
+import { Toaster } from "sonner";
+import TipModal from "./TipModal";
+import Header from "./Header";
 
 const Fontier = () => {
   const [isDark, setIsDark] = useState(true);
@@ -20,12 +22,15 @@ const Fontier = () => {
     font: "normal",
   });
   const [convertedText, setConvertedText] = useState("");
+  const [isTipModalOpen, setIsTipModalOpen] = useState(false); // ← Added missing state
 
   useEffect(() => {
     setConvertedText(convertToUnicode(text, format));
   }, [text, format]);
 
   const toggleTheme = () => setIsDark((v) => !v);
+  const openTipModal = () => setIsTipModalOpen(true); // ← Added missing function
+  const closeTipModal = () => setIsTipModalOpen(false); // ← Added missing function
 
   return (
     <div
@@ -37,38 +42,12 @@ const Fontier = () => {
       {/* sonner host */}
       <Toaster richColors position="top-right" />
 
-      {/* Header */}
-      <header
-        className={cn(
-          "border-b",
-          isDark ? "bg-[#2E323E] border-[#2E323E]" : "bg-white border-gray-200"
-        )}
-      >
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          {/* Left: logo + theme toggle */}
-          <div className="flex items-center w-full justify-between sm:justify-normal gap-6">
-            <h1 className="text-2xl font-semibold font-[Itim,cursive] text-[#606060] dark:text-[#D0D0D0]">
-              fontier
-            </h1>
-
-            <button
-              onClick={toggleTheme}
-              className="text-[#606060] dark:text-[#D0D0D0] transition-transform hover:scale-105 focus:outline-none"
-              aria-label="Toggle theme"
-              title="Toggle theme"
-            >
-              {isDark ? (
-                <Moon className="w-5 h-5" />
-              ) : (
-                <Sun className="w-5 h-5" />
-              )}
-            </button>
-          </div>
-
-          {/* Right side: (removed copy button) */}
-          <div className="hidden sm:flex items-center space-x-3" />
-        </div>
-      </header>
+      {/* Header Component */}
+      <Header
+        isDark={isDark}
+        onToggleTheme={toggleTheme}
+        onOpenTipModal={openTipModal}
+      />
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-6">
@@ -103,24 +82,16 @@ const Fontier = () => {
           </div>
         </div>
 
-        {/* Info section */}
-        <div
-          className={cn(
-            "mt-8 p-4 rounded-lg border",
-            isDark
-              ? "bg-[#2E323E] border-[#2E323E]"
-              : "bg-gray-100 border-gray-200"
-          )}
-        >
-          <h3 className="font-semibold mb-2">How it works:</h3>
-          <p className="text-sm opacity-75">
-            Your formatted text is converted to Unicode characters that preserve
-            styling even when pasted into platforms like Twitter, LinkedIn,
-            Instagram, Discord, and WhatsApp that don&apos;t support HTML
-            formatting.
-          </p>
-        </div>
+        {/* Info section component */}
+        <InfoSection isDark={isDark} />
       </div>
+
+      {/* Tip Modal */}
+      <TipModal
+        isOpen={isTipModalOpen}
+        onClose={closeTipModal}
+        isDark={isDark}
+      />
     </div>
   );
 };
