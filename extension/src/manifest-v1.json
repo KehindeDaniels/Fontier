@@ -18,8 +18,5 @@
       "js": ["src/content.ts"],
       "run_at": "document_idle"
     }
-  ],
-  "content_security_policy": {
-    "extension_pages": "script-src 'self'; object-src 'self'; connect-src 'self' http://127.0.0.1:5173 ws://127.0.0.1:5173"
-  }
+  ]
 }
