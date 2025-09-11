@@ -7,7 +7,7 @@ import {
   italicStrikethroughMap,
   boldItalicStrikethroughMap,
   underlineMap,
-} from "./fontStyles.js";
+} from "../../../legacy/fontStyles.js";
 
 document.addEventListener("DOMContentLoaded", () => {
   const textInput = document.getElementById("textInput");
