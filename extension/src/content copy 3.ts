@@ -104,6 +104,8 @@ const updatePreview = () => {
 
   const previewEl = tray.querySelector(".fontier-preview") as HTMLElement;
   const reverseBtn = tray.querySelector(".fontier-reverse") as HTMLElement;
+  const styleButtons = tray.querySelectorAll(".fontier-style-btn");
+
   if (!previewEl || !reverseBtn) return;
 
   const txt = getCachedText();
@@ -116,11 +118,17 @@ const updatePreview = () => {
     let out: string;
 
     if (isReverseMode) {
-      // Convert back to normal ASCII
+      // Convert back to normal ASCII - ignore styling options
       out = convertFromUnicode(txt);
       reverseBtn.classList.add("active");
+
+      // Disable style buttons in reverse mode
+      styleButtons.forEach((btn) => {
+        btn.classList.add("disabled");
+        (btn as HTMLButtonElement).disabled = true;
+      });
     } else {
-      // Convert to styled Unicode
+      // Convert to styled Unicode - use styling options
       const formatToUse: TextFormat = {
         ...current,
         font: "normal",
@@ -128,6 +136,12 @@ const updatePreview = () => {
       };
       out = convertToUnicode(txt, formatToUse);
       reverseBtn.classList.remove("active");
+
+      // Enable style buttons in forward mode
+      styleButtons.forEach((btn) => {
+        btn.classList.remove("disabled");
+        (btn as HTMLButtonElement).disabled = false;
+      });
     }
 
     previewEl.textContent = out;
@@ -135,27 +149,6 @@ const updatePreview = () => {
     previewEl.textContent = "Error generating preview";
     console.error("Conversion error:", e);
   }
-};
-
-// Update button states based on reverse mode
-const updateButtonStates = () => {
-  if (!tray) return;
-
-  const buttons = tray.querySelectorAll(".fontier-format-btn");
-  buttons.forEach((btn) => {
-    // Check if the element is an HTMLElement
-    if (btn instanceof HTMLElement) {
-      if (isReverseMode) {
-        btn.setAttribute("disabled", "true");
-        btn.style.opacity = "0.5";
-        btn.style.cursor = "not-allowed";
-      } else {
-        btn.removeAttribute("disabled");
-        btn.style.opacity = "1";
-        btn.style.cursor = "pointer";
-      }
-    }
-  });
 };
 
 const ensureTray = () => {
@@ -220,9 +213,8 @@ const ensureTray = () => {
   css.textContent = `
     .fontier-tray{display:flex}
     .fontier-btn{cursor:pointer;border:1px solid #4b5563;background:#374151;color:#fff;border-radius:8px;padding:4px 8px;font-size:12px;line-height:1}
-    .fontier-btn:disabled{cursor:not-allowed;opacity:0.5}
     .fontier-btn.active{background:#2563eb;border-color:#2563eb}
-    .fontier-btn.reverse.active{background:#dc2626;border-color:#dc2626}
+    .fontier-btn.disabled{opacity:0.5;cursor:not-allowed}
     .fontier-divider{width:1px;height:16px;background:#4b5563;margin:0 4px}
   `;
   tray.appendChild(css);
@@ -230,14 +222,13 @@ const ensureTray = () => {
   const mkToggle = (label: string, key: keyof Format) => {
     const b = document.createElement("button");
     b.textContent = label;
-    b.className = "fontier-btn fontier-format-btn";
+    b.className = "fontier-btn fontier-style-btn";
     b.addEventListener("click", (e) => {
-      // Don't allow formatting in reverse mode
-      if (isReverseMode) {
-        e.preventDefault();
-        e.stopPropagation();
-        return;
-      }
+      e.preventDefault();
+      e.stopPropagation();
+
+      // Don't allow style changes in reverse mode
+      if (isReverseMode) return;
 
       current[key] = !current[key];
       b.classList.toggle("active", current[key]);
@@ -258,7 +249,6 @@ const ensureTray = () => {
     isReverseMode = !isReverseMode;
     reverseBtn.classList.toggle("active", isReverseMode);
     restoreSelection();
-    updateButtonStates(); // Update format button states
     updatePreview();
   });
 
@@ -352,9 +342,8 @@ const showTray = (rect: DOMRect) => {
   const txt = getCachedText();
   isReverseMode = containsStyledUnicode(txt);
 
-  // Update preview and button states when showing
+  // Update preview when showing
   updatePreview();
-  updateButtonStates();
 };
 
 const hideTray = () => {
@@ -469,15 +458,14 @@ const updateTrayTheme = () => {
     tray.style.borderColor = "#374151";
   } else {
     tray.style.background = "#fff";
-    tray.style.color = "##000";
+    tray.style.color = "#000";
     tray.style.borderColor = "#e5e7eb";
 
     // Update CSS for light mode
     const lightCSS = `
       .fontier-btn { background: #f3f4f6; color: #000; border-color: #d1d5db; }
-      .fontier-btn:disabled { background: #f3f4f6; color: #9ca3af; }
       .fontier-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
-      .fontier-btn.reverse.active { background: #dc2626; color: #fff; border-color: #dc2626; }
+      .fontier-btn.disabled { background: #f3f4f6; color: #9ca3af; }
       .fontier-divider { background: #d1d5db; }
       .fontier-preview { background: #f3f4f6; color: #000; }
     `;

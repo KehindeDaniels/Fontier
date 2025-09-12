@@ -115,6 +115,44 @@ export const convertToUnicode = (
   return out;
 };
 
+// src/core/converter.ts
+// Add this function to your existing converter
+
+/** Convert styled Unicode text back to normal ASCII text */
+export const convertFromUnicode = (text: string): string => {
+  // Create a reverse mapping of all our unicode characters
+  const reverseMap = new Map<string, string>();
+
+  // Add all mappings from our various unicode maps
+  const addToReverseMap = (map: Record<string, string>) => {
+    Object.entries(map).forEach(([normal, styled]) => {
+      reverseMap.set(styled, normal);
+    });
+  };
+
+  addToReverseMap(BOLD);
+  addToReverseMap(ITALIC);
+  addToReverseMap(BOLD_ITALIC);
+  addToReverseMap(SCRIPT);
+  addToReverseMap(MONOSPACE);
+  addToReverseMap(SERIF);
+  addToReverseMap(H1);
+  addToReverseMap(SANS);
+  addToReverseMap(SANS_BOLD);
+  addToReverseMap(FULLWIDTH);
+  addToReverseMap(DOUBLESTRUCK);
+
+  // Remove combining marks (underline, strikethrough) first
+  let result = text.replace(/[\u0332\u0336]/g, "");
+
+  // Reverse map the remaining characters
+  result = Array.from(result)
+    .map((ch) => reverseMap.get(ch) ?? ch)
+    .join("");
+
+  return result;
+};
+
 /** Force-map with a specific variant (e.g., from a tray action) */
 export const mapStringWithVariant = (
   text: string,
