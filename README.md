@@ -5,7 +5,7 @@ It allows you to write in **bold, italic, strikethrough, script, and monospace f
 
 ---
 
-![Fontier Web App](public/assetsfontier-webapp.png)
+![Fontier Web App](public/assets/fontier-webapp.png)
 
 ## 📌 Problem Statement
 
@@ -52,14 +52,14 @@ Fontier uses **Unicode characters** that mimic styled text:
 ### Web App
 
 Full editor with all formatting options.
-![Fontier Web App](public/assetsfontier-webapp.png)
+![Fontier Web App](public/assets/fontier-webapp.png)
 
 ---
 
 ### Chrome Extension – Popup
 
 Style text directly from your browser toolbar.
-![Fontier Popup](public/assetsfontier-popup.png)
+![Fontier Popup](public/assets/fontier-popup.png)
 
 - **Popup Mode** → Click the Fontier icon in Chrome.
 - **Contextual Tray** → Highlight text, a mini toolbar appears, apply styles, then copy or replace in-place.
@@ -70,7 +70,7 @@ Style text directly from your browser toolbar.
 ### Chrome Extension – Tray
 
 When highlighting text inside a content-editable field (like LinkedIn posts), Fontier shows a floating tray for fast styling.
-![Fontier Tray](public/assetsplaceholder-tray.png)
+![Fontier Tray](public/assets/placeholder-tray.png)
 
 ---
 
@@ -134,10 +134,10 @@ Fontier
 ### Extension
 
 - **Popup:** Click the Fontier icon to open a compact editor.
-  ![Fontier Popup](public/assetsfontier-popup.png)
+  ![Fontier Popup](public/assets/fontier-popup.png)
 
 - **Tray:** Highlight text → toolbar appears → apply styles → copy or replace in-place.
-  ![Fontier Tray](public/assetsplaceholder-tray.png)
+  ![Fontier Tray](public/assets/placeholder-tray.png)
 
 ---
 
