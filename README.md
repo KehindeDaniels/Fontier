@@ -5,11 +5,13 @@ It allows you to write in **bold, italic, strikethrough, script, and monospace f
 
 ---
 
-![Fontier Web App](public/assets/fontier-webapp.png)
+<!-- ![Fontier Web App](public/assets/fontier-webapp.png)
 ![Fontier Web App](./assets/fontier-webapp.png)
 ![Fontier Web App](/assets/fontier-webapp.png)
 ![Fontier Web App](src/assets/fontier-webapp.png)
-![Fontier Web App](./src/assets/fontier-webapp.png)
+![Fontier Web App](./src/assets/fontier-webapp.png) -->
+
+![Fontier Web App](https://res.cloudinary.com/dk47zom8d/image/upload/v1758524945/fontier-webapp_kmakew.png)
 
 ## 📌 Problem Statement
 
