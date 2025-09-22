@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { Moon, Sun, Copy } from "lucide-react";
-import { convertToUnicode } from "./core";
+import { convertToUnicode } from "../core";
 // ⬇️ update this path to match your extension folder structure
 // e.g. "../core/converter" or "@/core/converter" if you have aliasing set up for the extension project
 // import { convertToUnicode } from "../core/converter";

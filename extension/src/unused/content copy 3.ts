@@ -1,22 +1,16 @@
 // src/content.ts
-import { convertToUnicode } from "./core/converter";
+import type { TextFormat } from "../core";
+import { convertToUnicode, convertFromUnicode } from "../core/converter";
 
-type Format = {
-  bold: boolean;
-  italic: boolean;
-  underline: boolean;
-  strikethrough: boolean;
-  size: "normal" | "h1" | "h2" | "h3" | "h4";
-  font: "normal" | "serif" | "monospace" | "script";
-};
+// Simplified Format type without font and size options
+type Format = Omit<TextFormat, "font" | "size">;
 
 const DEFAULT_FORMAT: Format = {
   bold: false,
   italic: false,
   underline: false,
+  underlinePhrase: false,
   strikethrough: false,
-  size: "normal",
-  font: "normal",
 };
 
 // ---------- selection cache ----------
@@ -72,7 +66,15 @@ const getCachedText = (): string => {
   return lastSel.range.toString();
 };
 
-// Restore the visual selection so it “hangs” while using the tray
+// Check if text contains Unicode characters that we can convert back
+const containsStyledUnicode = (text: string): boolean => {
+  // Check for any characters from our unicode maps or combining marks
+  const unicodePattern =
+    /[\u0332\u0336\u2100-\u214F\u1D400-\u1D7FF\uFF00-\uFFEF]/;
+  return unicodePattern.test(text);
+};
+
+// Restore the visual selection so it "hangs" while using the tray
 const restoreSelection = () => {
   if (!lastSel) return;
   if (lastSel.kind === "input") {
@@ -94,6 +96,60 @@ const restoreSelection = () => {
 // ---------- tray ----------
 let tray: HTMLDivElement | null = null;
 const current: Format = { ...DEFAULT_FORMAT };
+let isReverseMode = false; // Track whether we're in reverse conversion mode
+
+// Update preview when format changes
+const updatePreview = () => {
+  if (!tray) return;
+
+  const previewEl = tray.querySelector(".fontier-preview") as HTMLElement;
+  const reverseBtn = tray.querySelector(".fontier-reverse") as HTMLElement;
+  const styleButtons = tray.querySelectorAll(".fontier-style-btn");
+
+  if (!previewEl || !reverseBtn) return;
+
+  const txt = getCachedText();
+  if (!txt) {
+    previewEl.textContent = "Select text to preview...";
+    return;
+  }
+
+  try {
+    let out: string;
+
+    if (isReverseMode) {
+      // Convert back to normal ASCII - ignore styling options
+      out = convertFromUnicode(txt);
+      reverseBtn.classList.add("active");
+
+      // Disable style buttons in reverse mode
+      styleButtons.forEach((btn) => {
+        btn.classList.add("disabled");
+        (btn as HTMLButtonElement).disabled = true;
+      });
+    } else {
+      // Convert to styled Unicode - use styling options
+      const formatToUse: TextFormat = {
+        ...current,
+        font: "normal",
+        size: "normal",
+      };
+      out = convertToUnicode(txt, formatToUse);
+      reverseBtn.classList.remove("active");
+
+      // Enable style buttons in forward mode
+      styleButtons.forEach((btn) => {
+        btn.classList.remove("disabled");
+        (btn as HTMLButtonElement).disabled = false;
+      });
+    }
+
+    previewEl.textContent = out;
+  } catch (e) {
+    previewEl.textContent = "Error generating preview";
+    console.error("Conversion error:", e);
+  }
+};
 
 const ensureTray = () => {
   if (tray) return tray;
@@ -114,7 +170,35 @@ const ensureTray = () => {
       "system-ui,-apple-system,Segoe UI,Roboto,Arial,Helvetica,Ubuntu,sans-serif",
     gap: "6px",
     alignItems: "center",
+    flexDirection: "column",
   } as CSSStyleDeclaration);
+
+  // Preview area
+  const preview = document.createElement("div");
+  preview.className = "fontier-preview";
+  preview.textContent = "Select text to preview...";
+  Object.assign(preview.style, {
+    fontSize: "12px",
+    padding: "4px 8px",
+    marginBottom: "6px",
+    borderRadius: "4px",
+    background: "#374151",
+    maxWidth: "200px",
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+  });
+  tray.appendChild(preview);
+
+  // Controls container
+  const controls = document.createElement("div");
+  controls.className = "fontier-controls";
+  Object.assign(controls.style, {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+  });
+  tray.appendChild(controls);
 
   // prevent losing selection when interacting with tray
   const swallow = (e: Event) => {
@@ -130,8 +214,7 @@ const ensureTray = () => {
     .fontier-tray{display:flex}
     .fontier-btn{cursor:pointer;border:1px solid #4b5563;background:#374151;color:#fff;border-radius:8px;padding:4px 8px;font-size:12px;line-height:1}
     .fontier-btn.active{background:#2563eb;border-color:#2563eb}
-    .fontier-sel{min-width:86px;margin-left:6px;border:1px solid #4b5563;background:#111827;color:#fff;border-radius:8px;padding:2px 6px;font-size:12px;appearance:auto}
-    .fontier-sel:focus{outline:2px solid #2563eb;outline-offset:0}
+    .fontier-btn.disabled{opacity:0.5;cursor:not-allowed}
     .fontier-divider{width:1px;height:16px;background:#4b5563;margin:0 4px}
   `;
   tray.appendChild(css);
@@ -139,57 +222,40 @@ const ensureTray = () => {
   const mkToggle = (label: string, key: keyof Format) => {
     const b = document.createElement("button");
     b.textContent = label;
-    b.className = "fontier-btn";
+    b.className = "fontier-btn fontier-style-btn";
     b.addEventListener("click", (e) => {
       e.preventDefault();
       e.stopPropagation();
-      // @ts-expect-error bool key
+
+      // Don't allow style changes in reverse mode
+      if (isReverseMode) return;
+
       current[key] = !current[key];
       b.classList.toggle("active", current[key]);
       restoreSelection();
+      updatePreview();
     });
     return b;
   };
+
+  // Reverse conversion button
+  const reverseBtn = document.createElement("button");
+  reverseBtn.textContent = "↺";
+  reverseBtn.className = "fontier-btn fontier-reverse";
+  reverseBtn.title = "Convert back to normal text";
+  reverseBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isReverseMode = !isReverseMode;
+    reverseBtn.classList.toggle("active", isReverseMode);
+    restoreSelection();
+    updatePreview();
+  });
 
   const bB = mkToggle("B", "bold");
   const bI = mkToggle("I", "italic");
   const bU = mkToggle("U", "underline");
   const bS = mkToggle("S", "strikethrough");
-
-  const sizeSel = document.createElement("select");
-  sizeSel.className = "fontier-sel";
-  ["normal", "h1", "h2", "h3", "h4"].forEach((v) => {
-    const o = document.createElement("option");
-    o.value = v;
-    o.textContent = v.toUpperCase();
-    sizeSel.appendChild(o);
-  });
-  sizeSel.value = current.size; // init
-  sizeSel.addEventListener("change", (e) => {
-    e.stopPropagation();
-    current.size = sizeSel.value as Format["size"];
-    restoreSelection();
-  });
-
-  const fontSel = document.createElement("select");
-  fontSel.className = "fontier-sel";
-  [
-    ["normal", "Sans"],
-    ["serif", "Serif"],
-    ["monospace", "Mono"],
-    ["script", "Script"],
-  ].forEach(([v, l]) => {
-    const o = document.createElement("option");
-    o.value = v;
-    o.textContent = l as string;
-    fontSel.appendChild(o);
-  });
-  fontSel.value = current.font; // init
-  fontSel.addEventListener("change", (e) => {
-    e.stopPropagation();
-    current.font = fontSel.value as Format["font"];
-    restoreSelection();
-  });
 
   const copyBtn = document.createElement("button");
   copyBtn.textContent = "Copy";
@@ -199,7 +265,19 @@ const ensureTray = () => {
     e.stopPropagation();
     const txt = getCachedText();
     if (!txt) return blink(copyBtn, false);
-    const out = convertToUnicode(txt, current);
+
+    let out: string;
+    if (isReverseMode) {
+      out = convertFromUnicode(txt);
+    } else {
+      const formatToUse: TextFormat = {
+        ...current,
+        font: "normal",
+        size: "normal",
+      };
+      out = convertToUnicode(txt, formatToUse);
+    }
+
     try {
       await navigator.clipboard.writeText(out);
       blink(copyBtn, true);
@@ -219,14 +297,13 @@ const ensureTray = () => {
     hideTray(); // commit + close
   });
 
-  tray.append(
+  controls.append(
+    reverseBtn,
+    divider(),
     bB,
     bI,
     bU,
     bS,
-    divider(),
-    sizeSel,
-    fontSel,
     divider(),
     copyBtn,
     replaceBtn
@@ -260,17 +337,37 @@ const showTray = (rect: DOMRect) => {
   t.style.left = `${left}px`;
   t.style.top = `${top}px`;
   t.style.display = "flex";
+
+  // Auto-detect if selected text contains styled unicode
+  const txt = getCachedText();
+  isReverseMode = containsStyledUnicode(txt);
+
+  // Update preview when showing
+  updatePreview();
 };
 
 const hideTray = () => {
   if (tray) tray.style.display = "none";
+  // Reset reverse mode when hiding tray
+  isReverseMode = false;
 };
 
 const doReplace = () => {
   if (!lastSel) return;
   const txt = getCachedText();
   if (!txt) return;
-  const out = convertToUnicode(txt, current);
+
+  let out: string;
+  if (isReverseMode) {
+    out = convertFromUnicode(txt);
+  } else {
+    const formatToUse: TextFormat = {
+      ...current,
+      font: "normal",
+      size: "normal",
+    };
+    out = convertToUnicode(txt, formatToUse);
+  }
 
   if (lastSel.kind === "input") {
     const { el, start, end } = lastSel;
@@ -349,4 +446,47 @@ document.addEventListener(
   true
 );
 
-console.log("Content script loaded (Fontier, tray v3).");
+// System theme detection for shadcn
+const updateTrayTheme = () => {
+  if (!tray) return;
+
+  const isDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+  if (isDark) {
+    tray.style.background = "#1f2937";
+    tray.style.color = "#fff";
+    tray.style.borderColor = "#374151";
+  } else {
+    tray.style.background = "#fff";
+    tray.style.color = "#000";
+    tray.style.borderColor = "#e5e7eb";
+
+    // Update CSS for light mode
+    const lightCSS = `
+      .fontier-btn { background: #f3f4f6; color: #000; border-color: #d1d5db; }
+      .fontier-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+      .fontier-btn.disabled { background: #f3f4f6; color: #9ca3af; }
+      .fontier-divider { background: #d1d5db; }
+      .fontier-preview { background: #f3f4f6; color: #000; }
+    `;
+
+    // Remove any existing light mode style
+    const existingLightStyle = tray.querySelector(".fontier-light-style");
+    if (existingLightStyle) {
+      existingLightStyle.remove();
+    }
+
+    // Add light mode style
+    const style = document.createElement("style");
+    style.className = "fontier-light-style";
+    style.textContent = lightCSS;
+    tray.appendChild(style);
+  }
+};
+
+// Listen for theme changes
+window
+  .matchMedia("(prefers-color-scheme: dark)")
+  .addEventListener("change", updateTrayTheme);
+
+console.log("Content script loaded (Fontier, with reverse conversion).");

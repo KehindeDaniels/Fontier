@@ -1,6 +1,6 @@
 // src/content.ts
-import type { TextFormat } from "./core";
-import { convertToUnicode } from "./core/converter";
+import type { TextFormat } from "../core";
+import { convertToUnicode, convertFromUnicode } from "../core/converter";
 
 // Simplified Format type without font and size options
 type Format = Omit<TextFormat, "font" | "size">;
@@ -66,6 +66,14 @@ const getCachedText = (): string => {
   return lastSel.range.toString();
 };
 
+// Check if text contains Unicode characters that we can convert back
+const containsStyledUnicode = (text: string): boolean => {
+  // Check for any characters from our unicode maps or combining marks
+  const unicodePattern =
+    /[\u0332\u0336\u2100-\u214F\u1D400-\u1D7FF\uFF00-\uFFEF]/;
+  return unicodePattern.test(text);
+};
+
 // Restore the visual selection so it "hangs" while using the tray
 const restoreSelection = () => {
   if (!lastSel) return;
@@ -88,13 +96,15 @@ const restoreSelection = () => {
 // ---------- tray ----------
 let tray: HTMLDivElement | null = null;
 const current: Format = { ...DEFAULT_FORMAT };
+let isReverseMode = false; // Track whether we're in reverse conversion mode
 
 // Update preview when format changes
 const updatePreview = () => {
   if (!tray) return;
 
   const previewEl = tray.querySelector(".fontier-preview") as HTMLElement;
-  if (!previewEl) return;
+  const reverseBtn = tray.querySelector(".fontier-reverse") as HTMLElement;
+  if (!previewEl || !reverseBtn) return;
 
   const txt = getCachedText();
   if (!txt) {
@@ -103,19 +113,49 @@ const updatePreview = () => {
   }
 
   try {
-    // Convert with default font and size since we removed those options
-    const formatToUse: TextFormat = {
-      ...current,
-      font: "normal",
-      size: "normal",
-    };
+    let out: string;
 
-    const out = convertToUnicode(txt, formatToUse);
+    if (isReverseMode) {
+      // Convert back to normal ASCII
+      out = convertFromUnicode(txt);
+      reverseBtn.classList.add("active");
+    } else {
+      // Convert to styled Unicode
+      const formatToUse: TextFormat = {
+        ...current,
+        font: "normal",
+        size: "normal",
+      };
+      out = convertToUnicode(txt, formatToUse);
+      reverseBtn.classList.remove("active");
+    }
+
     previewEl.textContent = out;
   } catch (e) {
     previewEl.textContent = "Error generating preview";
     console.error("Conversion error:", e);
   }
+};
+
+// Update button states based on reverse mode
+const updateButtonStates = () => {
+  if (!tray) return;
+
+  const buttons = tray.querySelectorAll(".fontier-format-btn");
+  buttons.forEach((btn) => {
+    // Check if the element is an HTMLElement
+    if (btn instanceof HTMLElement) {
+      if (isReverseMode) {
+        btn.setAttribute("disabled", "true");
+        btn.style.opacity = "0.5";
+        btn.style.cursor = "not-allowed";
+      } else {
+        btn.removeAttribute("disabled");
+        btn.style.opacity = "1";
+        btn.style.cursor = "pointer";
+      }
+    }
+  });
 };
 
 const ensureTray = () => {
@@ -180,7 +220,9 @@ const ensureTray = () => {
   css.textContent = `
     .fontier-tray{display:flex}
     .fontier-btn{cursor:pointer;border:1px solid #4b5563;background:#374151;color:#fff;border-radius:8px;padding:4px 8px;font-size:12px;line-height:1}
+    .fontier-btn:disabled{cursor:not-allowed;opacity:0.5}
     .fontier-btn.active{background:#2563eb;border-color:#2563eb}
+    .fontier-btn.reverse.active{background:#dc2626;border-color:#dc2626}
     .fontier-divider{width:1px;height:16px;background:#4b5563;margin:0 4px}
   `;
   tray.appendChild(css);
@@ -188,10 +230,15 @@ const ensureTray = () => {
   const mkToggle = (label: string, key: keyof Format) => {
     const b = document.createElement("button");
     b.textContent = label;
-    b.className = "fontier-btn";
+    b.className = "fontier-btn fontier-format-btn";
     b.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
+      // Don't allow formatting in reverse mode
+      if (isReverseMode) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
       current[key] = !current[key];
       b.classList.toggle("active", current[key]);
       restoreSelection();
@@ -199,6 +246,21 @@ const ensureTray = () => {
     });
     return b;
   };
+
+  // Reverse conversion button
+  const reverseBtn = document.createElement("button");
+  reverseBtn.textContent = "↺";
+  reverseBtn.className = "fontier-btn fontier-reverse";
+  reverseBtn.title = "Convert back to normal text";
+  reverseBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    isReverseMode = !isReverseMode;
+    reverseBtn.classList.toggle("active", isReverseMode);
+    restoreSelection();
+    updateButtonStates(); // Update format button states
+    updatePreview();
+  });
 
   const bB = mkToggle("B", "bold");
   const bI = mkToggle("I", "italic");
@@ -214,14 +276,18 @@ const ensureTray = () => {
     const txt = getCachedText();
     if (!txt) return blink(copyBtn, false);
 
-    // Convert with default font and size
-    const formatToUse: TextFormat = {
-      ...current,
-      font: "normal",
-      size: "normal",
-    };
+    let out: string;
+    if (isReverseMode) {
+      out = convertFromUnicode(txt);
+    } else {
+      const formatToUse: TextFormat = {
+        ...current,
+        font: "normal",
+        size: "normal",
+      };
+      out = convertToUnicode(txt, formatToUse);
+    }
 
-    const out = convertToUnicode(txt, formatToUse);
     try {
       await navigator.clipboard.writeText(out);
       blink(copyBtn, true);
@@ -241,7 +307,17 @@ const ensureTray = () => {
     hideTray(); // commit + close
   });
 
-  controls.append(bB, bI, bU, bS, divider(), copyBtn, replaceBtn);
+  controls.append(
+    reverseBtn,
+    divider(),
+    bB,
+    bI,
+    bU,
+    bS,
+    divider(),
+    copyBtn,
+    replaceBtn
+  );
   document.documentElement.appendChild(tray);
   return tray;
 
@@ -272,12 +348,19 @@ const showTray = (rect: DOMRect) => {
   t.style.top = `${top}px`;
   t.style.display = "flex";
 
-  // Update preview when showing
+  // Auto-detect if selected text contains styled unicode
+  const txt = getCachedText();
+  isReverseMode = containsStyledUnicode(txt);
+
+  // Update preview and button states when showing
   updatePreview();
+  updateButtonStates();
 };
 
 const hideTray = () => {
   if (tray) tray.style.display = "none";
+  // Reset reverse mode when hiding tray
+  isReverseMode = false;
 };
 
 const doReplace = () => {
@@ -285,14 +368,17 @@ const doReplace = () => {
   const txt = getCachedText();
   if (!txt) return;
 
-  // Convert with default font and size
-  const formatToUse: TextFormat = {
-    ...current,
-    font: "normal",
-    size: "normal",
-  };
-
-  const out = convertToUnicode(txt, formatToUse);
+  let out: string;
+  if (isReverseMode) {
+    out = convertFromUnicode(txt);
+  } else {
+    const formatToUse: TextFormat = {
+      ...current,
+      font: "normal",
+      size: "normal",
+    };
+    out = convertToUnicode(txt, formatToUse);
+  }
 
   if (lastSel.kind === "input") {
     const { el, start, end } = lastSel;
@@ -383,13 +469,15 @@ const updateTrayTheme = () => {
     tray.style.borderColor = "#374151";
   } else {
     tray.style.background = "#fff";
-    tray.style.color = "#000";
+    tray.style.color = "##000";
     tray.style.borderColor = "#e5e7eb";
 
     // Update CSS for light mode
     const lightCSS = `
       .fontier-btn { background: #f3f4f6; color: #000; border-color: #d1d5db; }
+      .fontier-btn:disabled { background: #f3f4f6; color: #9ca3af; }
       .fontier-btn.active { background: #3b82f6; color: #fff; border-color: #3b82f6; }
+      .fontier-btn.reverse.active { background: #dc2626; color: #fff; border-color: #dc2626; }
       .fontier-divider { background: #d1d5db; }
       .fontier-preview { background: #f3f4f6; color: #000; }
     `;
@@ -413,4 +501,4 @@ window
   .matchMedia("(prefers-color-scheme: dark)")
   .addEventListener("change", updateTrayTheme);
 
-console.log("Content script loaded (Fontier, simplified tray).");
+console.log("Content script loaded (Fontier, with reverse conversion).");
