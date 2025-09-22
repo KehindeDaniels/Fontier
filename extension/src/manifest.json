@@ -2,27 +2,18 @@
   "manifest_version": 3,
   "name": "Fontier (Dev)",
   "version": "0.0.1",
-  "action": {
-    "default_title": "Fontier",
-    "default_popup": "index.html",
-    "default_icon": {
-      "16": "icons/f16.png",
-      "48": "icons/f48.png",
-      "128": "icons/f128.png"
-    }
-  },
+  "action": { "default_title": "Fontier", "default_popup": "index.html" },
   "icons": {
     "16": "icons/f16.png",
     "48": "icons/f48.png",
     "128": "icons/f128.png"
   },
-  "permissions": [],
   "host_permissions": ["<all_urls>"],
   "background": { "service_worker": "src/background.ts", "type": "module" },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["src/content.ts"],
+      "js": ["src/content/index.ts"],
       "run_at": "document_idle"
     }
   ],
