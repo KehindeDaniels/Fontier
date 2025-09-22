@@ -6,6 +6,10 @@ It allows you to write in **bold, italic, strikethrough, script, and monospace f
 ---
 
 ![Fontier Web App](public/assets/fontier-webapp.png)
+![Fontier Web App](./assets/fontier-webapp.png)
+![Fontier Web App](/assets/fontier-webapp.png)
+![Fontier Web App](src/assets/fontier-webapp.png)
+![Fontier Web App](./src/assets/fontier-webapp.png)
 
 ## 📌 Problem Statement
 
