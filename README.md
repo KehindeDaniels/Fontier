@@ -3,6 +3,8 @@
 Fontier is a text styling tool available as both a **web application** and a **browser extension**.
 It allows you to write in **bold, italic, strikethrough, script, and monospace fonts** that survive copy-paste across platforms.
 
+<img width="1024" height="1024" alt="fontier-popup" src="https://github.com/user-attachments/assets/1d170a52-d4af-4fe8-91f2-ad36be18111e" />
+
 ---
 
 <!-- ![Fontier Web App](public/assets/fontier-webapp.png)
