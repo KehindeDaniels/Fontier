@@ -7,21 +7,44 @@ interface HeaderProps {
 
 const Header = ({ isDark, setIsDark }: HeaderProps) => {
   return (
-    <div className="flex justify-between items-center px-4 py-3 border-b border-slate-200/20">
-      <h1 className="text-2xl font-normal font-[Itim,cursive] text-[#e8dede] dark:text-[#000000]">
-        fontier
-      </h1>
+    <div
+      className={`px-5 py-4 border-b ${
+        isDark ? "border-slate-800" : "border-slate-200"
+      }`}
+    >
+      <div className="flex justify-between items-center">
+        <div className="flex items-center gap-2">
+          <div
+            className={`p-1.5 rounded-lg ${
+              isDark ? "bg-blue-500/10" : "bg-blue-50"
+            }`}
+          >
+            <img
+              src="/icons/f128.png"
+              alt="Fontier Logo"
+              className="w-4 h-4 object-contain"
+            />
+          </div>
+          <h1
+            className={`text-xl font-semibold tracking-tight ${
+              isDark ? "text-slate-100" : "text-slate-900"
+            }`}
+          >
+            fontier
+          </h1>
+        </div>
 
-      <button
-        onClick={() => setIsDark(!isDark)}
-        className={`p-2 rounded-lg transition-colors duration-200 ${
-          isDark
-            ? "hover:bg-slate-700 text-slate-400 hover:text-slate-200"
-            : "hover:bg-slate-100 text-slate-600 hover:text-slate-900"
-        }`}
-      >
-        {isDark ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
-      </button>
+        <button
+          onClick={() => setIsDark(!isDark)}
+          className={`p-2 rounded-lg transition-all duration-200 ${
+            isDark
+              ? "hover:bg-slate-800 text-slate-400 hover:text-slate-300"
+              : "hover:bg-slate-100 text-slate-600 hover:text-slate-900"
+          }`}
+        >
+          {isDark ? <Moon className="w-4 h-4" /> : <Sun className="w-4 h-4" />}
+        </button>
+      </div>
     </div>
   );
 };

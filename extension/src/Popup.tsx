@@ -48,8 +48,8 @@ const Popup = () => {
     <div
       className={`w-[420px] h-[320px] flex flex-col ${
         isDark
-          ? "bg-gradient-to-br from-slate-900 to-slate-800 text-slate-100"
-          : "bg-gradient-to-br from-white to-slate-50 text-slate-900"
+          ? "bg-gradient-to-br from-gray-900 via-gray-900 to-gray-800"
+          : "bg-gradient-to-br from-gray-50 via-white to-gray-100"
       }`}
     >
       <Toaster richColors position="top-center" />
