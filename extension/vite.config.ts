@@ -12,5 +12,5 @@ export default defineConfig({
     // Use *localhost* to match the CSP above (or switch both to 127.0.0.1)
     hmr: { protocol: "ws", host: "localhost", port: 5173, clientPort: 5173 },
   },
-  build: { outDir: "dist", assetsDir: "assets" },
+  build: { outDir: "dist", assetsDir: "assets", emptyOutDir: true },
 });
